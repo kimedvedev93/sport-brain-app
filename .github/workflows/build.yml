@@ -1,0 +1,29 @@
+# Checks that the app compiles (iOS Simulator, no signing).
+# TestFlight upload will be added once an Apple Developer account is available.
+name: build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Build for iOS Simulator
+        run: |
+          xcodebuild \
+            -project SportBrain.xcodeproj \
+            -scheme SportBrain \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet build
